@@ -86,13 +86,12 @@ int     lcan(int*, int , node* );
 int     Chicken(int,node*, node*, map<string,string>&);
 int     nwk2tree(const char*,node*);
 int     contains (int*, int, int);
-int     contains2 (int*, int, int);
 string  num2str(int);
 string  reverse(string);
 void    gene_dict(char*,map<string,string>&);
 void    hp(int, node*, node*, int*, int, int*);
 int     herederos(int, int, node*, node*,int*, int );
-string  node2nwk(node*, int, map<string,string>&);
+string  node2nwk(node*, int);
 void    printTree(node*, int);
 
 //  Función principal
@@ -110,7 +109,7 @@ int main(void){
     
     cout<<"-----LECTURA DE ESPECIES----"<<endl;
     node tree[SIZE*2];
-    char file[]="Spec-Tree.nwk";
+    char file[]="all_spec_tree3_clean.nwk";
     int  len;
     len=nwk2tree(file,tree);
     
@@ -118,7 +117,7 @@ int main(void){
     newickFile_spec.open("Recon_spec_tree.nwk");
     cout<<"Recon_spec_tree.nwk"<<endl;
     string output_spec;
-    output_spec=node2nwk(tree,0,Dict);
+    output_spec=node2nwk(tree,0);
     newickFile_spec << output_spec << endl;
     newickFile_spec.close();
     
@@ -168,25 +167,25 @@ int main(void){
 
             // en caso de ser congruente
             if (chick>0){
-                cout<<"-----ELIMINACIONES----"<<endl;
-                int     tamano=0, i=0;
-                int     Stack[SIZE*2];
-                Stack[0]=0;
-                
-                while (i<=tamano){
-                    int temp[tree[i].manyChildren+1];
-                    hp(i, tree, tree1, temp, len, &len1);
-                    int j=0;
-//                     cout<<temp[0]<<endl;
-                    while(temp[j]!=-1){
-//                         cout<<temp[j]<<endl;
-                        tamano++;
-                        Stack[tamano]=temp[j];
-                        j++;
-                    }
-                    i++;
-                    
-                }
+//                 cout<<"-----ELIMINACIONES----"<<endl;
+//                 int     tamano=0, i=0;
+//                 int     Stack[SIZE*2];
+//                 Stack[0]=0;
+//                 
+//                 while (i<=tamano){
+//                     int temp[tree[i].manyChildren+1];
+//                     hp(i, tree, tree1, temp, len, &len1);
+//                     int j=0;
+// //                     cout<<temp[0]<<endl;
+//                     while(temp[j]!=-1){
+// //                         cout<<temp[j]<<endl;
+//                         tamano++;
+//                         Stack[tamano]=temp[j];
+//                         j++;
+//                     }
+//                     i++;
+//                     
+//                 }
                 
 //                   cout<<"----Tree1----"<<endl;
 //                   printTree(tree1,len1);
@@ -272,7 +271,7 @@ int main(void){
             
             string output;
 //              cout<<"root ="<<tree1[0].name<<"\""<<endl;
-            output=node2nwk(tree1,0,Dict);
+            output=node2nwk(tree1,0);
 //               cout<<output<<endl;
             newickFile << output << endl;
             newickFile.close();
@@ -342,29 +341,6 @@ int contains (int *ARRAY, int n, int end){
     return -1;
 }
 
-
-/*      --------CONTAINS2 n IN ARRAY?----------
- * 
- * Regresa la ubicación donde se encuentra "n"
- * en el "ARRAY"
- * regresa -1 si no lo encuentra
- */
-
-int contains2 (int *ARRAY, int n, int end){
-    
-    int     i=0;
-    
-    while((i<end) && (i<=MAX_MEMORY)&&(ARRAY[i]!=n)){
-        i++;
-    }
-    
-    if(ARRAY[i]==n){
-            return i;
-    }
-    
-    
-    return -1;
-}
 
 /*      ----------------------LAST COMON ANCESTER---------------------------
  * busca el ancestro común entre "leaf1" y "leaf2"
@@ -486,7 +462,7 @@ int lcan(int *descendencia, int size, node *tree ){
 int Chicken(int raiz,node *spec_tree, node *gene_tree, map<string,string> &Dict){
     int     i=0;
     int     ancester;
-    cout<<"raiz= "<<raiz<<endl;
+    
     //  caso sencillo, hoja mapea a hoja
     //  se busca la especie en el arbol de especies
 //      gene_tree[raiz].Print();
@@ -994,7 +970,7 @@ int     herederos(int i, int map, node *gene_tree, node *spec_tree,int *len_gen,
  * 
  *-------------------------------------------------------------------------*/
 
-string  node2nwk(node *tree, int i, map<string,string> &Dict){
+string  node2nwk(node *tree, int i){
     string temp;
     
     // caso de las hojas
@@ -1002,7 +978,7 @@ string  node2nwk(node *tree, int i, map<string,string> &Dict){
         if (tree[i].type=='X'){
             temp="X";
         }else{
-            temp=tree[i].name+"_"+Dict[tree[i].name];      // regresa "name,"
+            temp=tree[i].name;      // regresa "name,"
         }
         
     // caso del los nodos internos
@@ -1010,10 +986,10 @@ string  node2nwk(node *tree, int i, map<string,string> &Dict){
         
         int hijo=tree[i].firstChild;
         temp="(";
-        temp.append(node2nwk(tree, hijo, Dict));
+        temp.append(node2nwk(tree, hijo));
         hijo=tree[hijo].nextBrother;
         for(int count=1;count<tree[i].manyChildren;count++){
-            temp.append(","+node2nwk(tree, hijo,Dict));
+            temp.append(","+node2nwk(tree, hijo));
             hijo=tree[hijo].nextBrother;
         }
         

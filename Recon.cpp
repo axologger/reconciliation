@@ -86,6 +86,7 @@ int     lcan(int*, int , node* );
 int     Chicken(int,node*, node*, map<string,string>&);
 int     nwk2tree(const char*,node*);
 int     contains (int*, int, int);
+int     contains2 (int*, int, int);
 string  num2str(int);
 string  reverse(string);
 void    gene_dict(char*,map<string,string>&);
@@ -109,7 +110,7 @@ int main(void){
     
     cout<<"-----LECTURA DE ESPECIES----"<<endl;
     node tree[SIZE*2];
-    char file[]="all_spec_tree3_clean.nwk";
+    char file[]="Spec-Tree.nwk";
     int  len;
     len=nwk2tree(file,tree);
     
@@ -341,6 +342,29 @@ int contains (int *ARRAY, int n, int end){
     return -1;
 }
 
+
+/*      --------CONTAINS2 n IN ARRAY?----------
+ * 
+ * Regresa la ubicación donde se encuentra "n"
+ * en el "ARRAY"
+ * regresa -1 si no lo encuentra
+ */
+
+int contains2 (int *ARRAY, int n, int end){
+    
+    int     i=0;
+    
+    while((i<end) && (i<=MAX_MEMORY)&&(ARRAY[i]!=n)){
+        i++;
+    }
+    
+    if(ARRAY[i]==n){
+            return i;
+    }
+    
+    
+    return -1;
+}
 
 /*      ----------------------LAST COMON ANCESTER---------------------------
  * busca el ancestro común entre "leaf1" y "leaf2"
@@ -756,7 +780,7 @@ string num2str(int Number){
 }
 
 
-/*      -------------------DICCTIONARIO DE GENES------------------------------
+/*      -------------------DICCIONARIO DE GENES------------------------------
  * 
  * obtiene los datos del dicctionario a partir de "file"
  * leyendo linea por lineas
